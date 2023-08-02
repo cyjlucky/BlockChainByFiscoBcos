@@ -1,0 +1,2 @@
+org/example/HelloWorld/DemoPkey.java
+ org.example.HelloWorld.DemoPkey

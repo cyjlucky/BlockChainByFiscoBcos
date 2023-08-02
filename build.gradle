@@ -1,0 +1,112 @@
+// 配置构建脚本
+buildscript {
+
+    // 仓库配置
+    repositories {
+        mavenCentral() // Maven中央仓库
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" } // 阿里云仓库
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" } // Sonatype快照仓库
+        maven { url 'http://maven.aliyun.com/nexus/content/repositories/google' } // 阿里云Google仓库
+        mavenLocal() // 本地Maven仓库
+    }
+
+    // 依赖配置
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.1.RELEASE") // Spring Boot Gradle插件依赖
+    }
+}
+
+// 插件配置
+plugins {
+    id 'org.springframework.boot' version '2.1.1.RELEASE' // 使用Spring Boot插件
+}
+
+// 应用插件配置
+apply plugin: 'java' // 应用Java插件
+apply plugin: 'eclipse' // 应用Eclipse插件
+apply plugin: 'idea' // 应用Idea插件
+apply plugin: 'maven' // 应用Maven插件
+apply plugin: 'org.springframework.boot' // 应用Spring Boot插件
+apply plugin: 'io.spring.dependency-management' // 应用Spring依赖管理插件
+
+// Java版本配置
+sourceCompatibility = 1.8 // 设置源代码兼容性为Java 8
+targetCompatibility = 1.8 // 设置目标代码兼容性为Java 8
+
+// Group和Version配置
+group = 'org.example' // 设置项目的Group
+version = '1.0.0-SNAPSHOT' // 设置项目的Version
+
+// 仓库配置
+repositories {
+    mavenLocal() // 本地Maven仓库
+    mavenCentral() // Maven中央仓库
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public/" } // 阿里云仓库
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" } // Sonatype快照仓库
+    maven { url "https://dl.bintray.com/ethereum/maven/" } // Ethereum仓库
+    maven { url "https://oss.sonatype.org/service/local/staging/deploy/maven2" } // Sonatype发布仓库
+    maven { url 'http://maven.aliyun.com/nexus/content/repositories/google' } // 阿里云Google仓库
+}
+
+// 配置项
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    all {
+    }
+}
+
+// 依赖配置
+dependencies {
+    implementation 'com.alibaba:fastjson:1.2.83' // Fastjson依赖
+    implementation 'org.springframework.boot:spring-boot-starter-web' // Spring Boot Starter Web依赖
+    implementation 'org.slf4j:slf4j-api:1.7.5' // SLF4J API依赖
+
+    compileOnly 'org.projectlombok:lombok' // Lombok依赖
+    annotationProcessor 'org.projectlombok:lombok' // Lombok注解处理器依赖
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') { // 单元测试依赖
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+
+    compile('org.fisco-bcos.java-sdk:fisco-bcos-java-sdk:2.7.2') { // FISCO-BCOS Java SDK依赖
+        exclude group: 'org.slf4j'
+    }
+}
+
+// 源代码配置
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java' // 设置源代码目录
+        }
+        resources {
+            srcDir 'src/main/resources' // 设置资源文件目录
+        }
+    }
+}
+
+// 测试配置
+test {
+    useJUnitPlatform()
+}
+
+// Spring Boot JAR配置
+bootJar {
+    destinationDir file('dist') // 设置生成的JAR文件目录
+    archiveName project.name + '-exec.jar' // 设置生成的JAR文件名
+
+    doLast {
+        copy {
+            from file('src/main/resources') // 复制资源文件到目标目录
+            into 'dist'
+        }
+    }
+}
+
+// 清理任务配置
+clean {
+    println "delete ${projectDir}/dist"
+    delete "${projectDir}/dist"
+}
